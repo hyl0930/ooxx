@@ -6,7 +6,23 @@ on:
       - main
 
 jobs:
+  enable-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      repository-projects: write
+    steps:
+      - name: Enable GitHub Pages
+        run: |
+          curl -L \
+            -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/pages \
+            -d '{"source":{"branch":"main","path":"/"},"build_type":"workflow"}'
+
   deploy:
+    needs: enable-pages
     runs-on: ubuntu-latest
     permissions:
       pages: write
