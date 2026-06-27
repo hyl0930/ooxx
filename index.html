@@ -9,24 +9,38 @@
 <body>
 
 <div class="container">
-
     <h1>⭕❌ 井字遊戲</h1>
 
-    <h2 id="status">玩家 X 回合</h2>
-
-    <div class="board" id="board">
-        <div class="cell" data-index="0"></div>
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
+    <!-- 遊戲模式選擇 -->
+    <div id="modeSelection" class="mode-selection">
+        <h2>選擇遊戲模式</h2>
+        <button class="mode-btn" onclick="startGame('pvp')">👤👤 人對人</button>
+        <button class="mode-btn" onclick="startGame('pvc')">👤🤖 人對電腦</button>
+        <button class="mode-btn" onclick="startGame('cvp')">🤖👤 電腦對人</button>
+        <button class="mode-btn" onclick="startGame('cvc')">🤖🤖 電腦對電腦</button>
     </div>
 
-    <button id="restart">重新開始</button>
+    <!-- 遊戲區域 -->
+    <div id="gameArea" class="game-area" style="display:none;">
+        <h2 id="status">玩家 X 回合</h2>
+
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="button-group">
+            <button id="restart" class="restart-btn">重新開始</button>
+            <button onclick="backToMenu()" class="back-btn">返回選單</button>
+        </div>
+    </div>
 
 </div>
 
