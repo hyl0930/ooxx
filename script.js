@@ -37,8 +37,13 @@ function initGame() {
         cell.removeEventListener("click", clickCell);
         cell.addEventListener("click", clickCell);
     });
-    restart.removeEventListener("click", reset);
-    restart.addEventListener("click", reset);
+    
+    // 重新取得 restart 按鈕引用，避免 undefined
+    restart = document.getElementById("restart");
+    if (restart) {
+        restart.removeEventListener("click", reset);
+        restart.addEventListener("click", reset);
+    }
 }
 
 function selectMode(mode) {
@@ -47,7 +52,8 @@ function selectMode(mode) {
     // 如果是人對人，直接開始遊戲
     if (mode === "pvp") {
         difficulty = "";
-        startGameDirect("pvp");
+        // 延遲執行，確保 DOM 已準備
+        setTimeout(() => startGameDirect("pvp"), 50);
     } else {
         // 其他模式需要選擇難度
         modeSelection.style.display = "none";
@@ -57,7 +63,7 @@ function selectMode(mode) {
 
 function startGame(diff) {
     difficulty = diff;
-    startGameDirect(gameMode);
+    setTimeout(() => startGameDirect(gameMode), 50);
 }
 
 function startGameDirect(mode) {
@@ -93,16 +99,22 @@ function startGameDirect(mode) {
     // 重置遊戲
     board = ["", "", "", "", "", "", "", "", ""];
     playing = true;
+    
     let cells = getCells();
     cells.forEach(c => c.textContent = "");
     
+    // 初始化事件監聽
     initGame();
     
-    // 如果是電腦先手，執行電腦回合
-    if (isComputerTurn && gameMode === "cvp") {
+    // 根據模式執行電腦回合
+    if (mode === "cvp") {
+        isComputerTurn = true;
         setTimeout(computerMove, 500);
-    } else if (gameMode === "cvc") {
+    } else if (mode === "cvc") {
+        isComputerTurn = true;
         setTimeout(computerMove, 500);
+    } else {
+        isComputerTurn = false;
     }
 }
 
@@ -132,7 +144,6 @@ function clickCell() {
 
 function makeMove(index) {
     board[index] = current;
-    let cells = getCells();
     document.querySelector(`[data-index="${index}"]`).textContent = current;
     
     if (checkWin()) {
@@ -209,7 +220,9 @@ function computerMove() {
         bestMove = findBestMoveHard();
     }
     
-    makeMove(bestMove);
+    if (bestMove !== undefined) {
+        makeMove(bestMove);
+    }
 }
 
 // 簡單：隨機走棋
@@ -326,7 +339,7 @@ function checkWin() {
 
 function reset() {
     board = ["", "", "", "", "", "", "", "", ""];
-    current = gameMode === "cvp" ? "X" : "X";
+    current = "X";
     playing = true;
     isComputerTurn = false;
     
@@ -359,6 +372,7 @@ function backToMenu() {
     board = ["", "", "", "", "", "", "", "", ""];
     current = "X";
     playing = true;
+    isComputerTurn = false;
     let cells = getCells();
     cells.forEach(c => c.textContent = "");
 }
