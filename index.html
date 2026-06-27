@@ -14,15 +14,25 @@
     <!-- 遊戲模式選擇 -->
     <div id="modeSelection" class="mode-selection">
         <h2>選擇遊戲模式</h2>
-        <button class="mode-btn" onclick="startGame('pvp')">👤👤 人對人</button>
-        <button class="mode-btn" onclick="startGame('pvc')">👤🤖 人對電腦</button>
-        <button class="mode-btn" onclick="startGame('cvp')">🤖👤 電腦對人</button>
-        <button class="mode-btn" onclick="startGame('cvc')">🤖🤖 電腦對電腦</button>
+        <button class="mode-btn" onclick="selectMode('pvp')">👤👤 人對人</button>
+        <button class="mode-btn" onclick="selectMode('pvc')">👤🤖 人對電腦</button>
+        <button class="mode-btn" onclick="selectMode('cvp')">🤖👤 電腦對人</button>
+        <button class="mode-btn" onclick="selectMode('cvc')">🤖🤖 電腦對電腦</button>
+    </div>
+
+    <!-- 難度選擇 -->
+    <div id="difficultySelection" class="difficulty-selection" style="display:none;">
+        <h2>選擇難度</h2>
+        <button class="difficulty-btn easy" onclick="startGame('easy')">🟢 簡單</button>
+        <button class="difficulty-btn medium" onclick="startGame('medium')">🟡 中等</button>
+        <button class="difficulty-btn hard" onclick="startGame('hard')">🔴 困難</button>
+        <button class="difficulty-btn back" onclick="backToModeSelection()">← 返回</button>
     </div>
 
     <!-- 遊戲區域 -->
     <div id="gameArea" class="game-area" style="display:none;">
         <h2 id="status">玩家 X 回合</h2>
+        <p id="difficultyLabel" style="color: #999; font-size: 0.9em;"></p>
 
         <div class="board" id="board">
             <div class="cell" data-index="0"></div>

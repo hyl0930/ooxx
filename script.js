@@ -1,12 +1,15 @@
 let status = document.getElementById("status");
 let restart = document.getElementById("restart");
 let modeSelection = document.getElementById("modeSelection");
+let difficultySelection = document.getElementById("difficultySelection");
 let gameArea = document.getElementById("gameArea");
+let difficultyLabel = document.getElementById("difficultyLabel");
 
 let board = ["", "", "", "", "", "", "", "", ""];
 let current = "X";
 let playing = true;
 let gameMode = "";
+let difficulty = "";
 let playerSymbol = "X";
 let computerSymbol = "O";
 let isComputerTurn = false;
@@ -38,32 +41,53 @@ function initGame() {
     restart.addEventListener("click", reset);
 }
 
-function startGame(mode) {
-    alert("startGame 有執行：" + mode);
+function selectMode(mode) {
     gameMode = mode;
     
+    // 如果是人對人，直接開始遊戲
+    if (mode === "pvp") {
+        difficulty = "";
+        startGameDirect("pvp");
+    } else {
+        // 其他模式需要選擇難度
+        modeSelection.style.display = "none";
+        difficultySelection.style.display = "block";
+    }
+}
+
+function startGame(diff) {
+    difficulty = diff;
+    startGameDirect(gameMode);
+}
+
+function startGameDirect(mode) {
     // 根據模式設置符號和回合
     if (mode === "pvp") {
         status.textContent = "玩家 X 回合 (人對人)";
+        difficultyLabel.textContent = "";
     } else if (mode === "pvc") {
         playerSymbol = "X";
         computerSymbol = "O";
         current = "X";
         status.textContent = "你是 X，電腦是 O。你先行。";
+        setDifficultyLabel();
     } else if (mode === "cvp") {
         playerSymbol = "O";
         computerSymbol = "X";
         current = "X";
         status.textContent = "你是 O，電腦是 X。電腦先行。";
         isComputerTurn = true;
+        setDifficultyLabel();
     } else if (mode === "cvc") {
         current = "X";
         status.textContent = "電腦對電腦 (自動進行)";
         isComputerTurn = true;
+        setDifficultyLabel();
     }
     
-    // 隱藏模式選擇，顯示遊戲區域
+    // 隱藏難度選擇，顯示遊戲區域
     modeSelection.style.display = "none";
+    difficultySelection.style.display = "none";
     gameArea.style.display = "block";
     
     // 重置遊戲
@@ -79,6 +103,16 @@ function startGame(mode) {
         setTimeout(computerMove, 500);
     } else if (gameMode === "cvc") {
         setTimeout(computerMove, 500);
+    }
+}
+
+function setDifficultyLabel() {
+    if (difficulty === "easy") {
+        difficultyLabel.textContent = "難度: 🟢 簡單";
+    } else if (difficulty === "medium") {
+        difficultyLabel.textContent = "難度: 🟡 中等";
+    } else if (difficulty === "hard") {
+        difficultyLabel.textContent = "難度: 🔴 困難";
     }
 }
 
@@ -165,20 +199,26 @@ function computerMove() {
     
     if (emptyIndices.length === 0) return;
     
-    // 簡單 AI 策略
-    let bestMove = findBestMove();
+    let bestMove;
+    
+    if (difficulty === "easy") {
+        bestMove = findBestMoveEasy(emptyIndices);
+    } else if (difficulty === "medium") {
+        bestMove = findBestMoveMedium(emptyIndices);
+    } else if (difficulty === "hard") {
+        bestMove = findBestMoveHard();
+    }
     
     makeMove(bestMove);
 }
 
-function findBestMove() {
-    // 優先順序：
-    // 1. 如果能贏，就贏
-    // 2. 如果對手能贏，就擋
-    // 3. 隨機選擇
-    
-    const emptyIndices = board.map((val, idx) => val === "" ? idx : null).filter(val => val !== null);
-    
+// 簡單：隨機走棋
+function findBestMoveEasy(emptyIndices) {
+    return emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+}
+
+// 中等：優先贏或防守
+function findBestMoveMedium(emptyIndices) {
     // 檢查是否能贏
     for (let move of emptyIndices) {
         board[move] = current;
@@ -208,6 +248,74 @@ function findBestMove() {
     
     // 隨機選擇
     return emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+}
+
+// 困難：Minimax 算法
+function findBestMoveHard() {
+    let bestScore = -Infinity;
+    let bestMove = 0;
+    
+    for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+            board[i] = current;
+            let score = minimax(0, false);
+            board[i] = "";
+            
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = i;
+            }
+        }
+    }
+    
+    return bestMove;
+}
+
+function minimax(depth, isMaximizing) {
+    const opponent = current === "X" ? "O" : "X";
+    const AI = current;
+    
+    // 檢查終止條件
+    let tempCurrent = current;
+    current = AI;
+    if (checkWin()) {
+        current = tempCurrent;
+        return 10 - depth;
+    }
+    current = opponent;
+    if (checkWin()) {
+        current = tempCurrent;
+        return depth - 10;
+    }
+    current = tempCurrent;
+    
+    if (!board.includes("")) {
+        return 0; // 平手
+    }
+    
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+                board[i] = AI;
+                let score = minimax(depth + 1, false);
+                board[i] = "";
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+                board[i] = opponent;
+                let score = minimax(depth + 1, true);
+                board[i] = "";
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
 }
 
 function checkWin() {
@@ -244,11 +352,19 @@ function reset() {
 
 function backToMenu() {
     modeSelection.style.display = "block";
+    difficultySelection.style.display = "none";
     gameArea.style.display = "none";
     gameMode = "";
+    difficulty = "";
     board = ["", "", "", "", "", "", "", "", ""];
     current = "X";
     playing = true;
     let cells = getCells();
     cells.forEach(c => c.textContent = "");
+}
+
+function backToModeSelection() {
+    modeSelection.style.display = "block";
+    difficultySelection.style.display = "none";
+    gameMode = "";
 }

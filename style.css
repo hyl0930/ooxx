@@ -65,6 +65,54 @@ h2 {
     transform: translateY(-1px);
 }
 
+/* 難度選擇 */
+.difficulty-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: slideIn 0.3s ease;
+}
+
+.difficulty-btn {
+    padding: 15px 25px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-btn.easy {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+}
+
+.difficulty-btn.medium {
+    background: linear-gradient(135deg, #f0aa4d 0%, #fdd84a 100%);
+    color: #333;
+}
+
+.difficulty-btn.hard {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+
+.difficulty-btn.back {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-top: 20px;
+}
+
+.difficulty-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.difficulty-btn:active {
+    transform: translateY(-1px);
+}
+
 /* 遊戲區域 */
 .game-area {
     animation: slideIn 0.3s ease;
@@ -192,7 +240,8 @@ h2 {
         font-size: 50px;
     }
     
-    .mode-btn {
+    .mode-btn,
+    .difficulty-btn {
         padding: 12px 20px;
         font-size: 16px;
     }
