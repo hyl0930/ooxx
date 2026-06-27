@@ -39,6 +39,7 @@ function initGame() {
 }
 
 function startGame(mode) {
+    alert("startGame 有執行：" + mode);
     gameMode = mode;
     
     // 根據模式設置符號和回合
