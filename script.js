@@ -1,4 +1,3 @@
-let cells = document.querySelectorAll(".cell");
 let status = document.getElementById("status");
 let restart = document.getElementById("restart");
 let modeSelection = document.getElementById("modeSelection");
@@ -23,11 +22,19 @@ const win = [
     [2, 4, 6]
 ];
 
+// 獲取所有 cell
+function getCells() {
+    return document.querySelectorAll(".cell");
+}
+
 // 初始化事件監聽
 function initGame() {
+    let cells = getCells();
     cells.forEach(cell => {
+        cell.removeEventListener("click", clickCell);
         cell.addEventListener("click", clickCell);
     });
+    restart.removeEventListener("click", reset);
     restart.addEventListener("click", reset);
 }
 
@@ -40,6 +47,7 @@ function startGame(mode) {
     } else if (mode === "pvc") {
         playerSymbol = "X";
         computerSymbol = "O";
+        current = "X";
         status.textContent = "你是 X，電腦是 O。你先行。";
     } else if (mode === "cvp") {
         playerSymbol = "O";
@@ -48,6 +56,7 @@ function startGame(mode) {
         status.textContent = "你是 O，電腦是 X。電腦先行。";
         isComputerTurn = true;
     } else if (mode === "cvc") {
+        current = "X";
         status.textContent = "電腦對電腦 (自動進行)";
         isComputerTurn = true;
     }
@@ -58,8 +67,8 @@ function startGame(mode) {
     
     // 重置遊戲
     board = ["", "", "", "", "", "", "", "", ""];
-    current = "X";
     playing = true;
+    let cells = getCells();
     cells.forEach(c => c.textContent = "");
     
     initGame();
@@ -88,6 +97,7 @@ function clickCell() {
 
 function makeMove(index) {
     board[index] = current;
+    let cells = getCells();
     document.querySelector(`[data-index="${index}"]`).textContent = current;
     
     if (checkWin()) {
@@ -223,6 +233,7 @@ function reset() {
         isComputerTurn = true;
     }
     
+    let cells = getCells();
     cells.forEach(c => c.textContent = "");
     
     if (isComputerTurn && (gameMode === "cvp" || gameMode === "cvc")) {
@@ -237,5 +248,6 @@ function backToMenu() {
     board = ["", "", "", "", "", "", "", "", ""];
     current = "X";
     playing = true;
+    let cells = getCells();
     cells.forEach(c => c.textContent = "");
 }
